@@ -2,21 +2,20 @@
 namespace OffbeatWP\Support\Wordpress;
 
 class Ajax {
-    public static function isAjaxRequest()
+    public static function isAjaxRequest(): bool
     {
         return wp_doing_ajax();
     }
 
-    public function make($action, $ajaxClass, $noPriv = true, $priv = true)
+    public function make(string $action, string $ajaxClass, bool $noPriv = true, bool $priv = true): void
     {
         if (!self::isAjaxRequest()) {
-            return null;
+            return;
         }
 
         if ($priv) {
             add_action("wp_ajax_{$action}", function () use ($ajaxClass) {
                 container()->call([$ajaxClass, 'execute']);
-
                 wp_die();
             });
         }
@@ -24,7 +23,6 @@ class Ajax {
         if ($noPriv) {
             add_action("wp_ajax_nopriv_{$action}", function () use ($ajaxClass) {
                 container()->call([$ajaxClass, 'execute']);
-
                 wp_die();
             });
         }
